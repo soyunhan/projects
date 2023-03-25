@@ -93,16 +93,17 @@
         });
 
         function listing() {
-
             $("#cards-box").empty();
             fetch('/movie').then((res) => res.json()).then((data) => {
                 let rows = data['result']
+                console.log(rows)
                 rows.forEach((a) => {
                     let title = a["title"];
                     let desc = a["desc"];
                     let img = a["img"];
                     let comment = a["comment"];
                     let star = a["star"];
+                    let num = a["num"];
 
                     let star_repeat = '⭐'.repeat(star)
 
@@ -115,8 +116,8 @@
                                     <p class="card-text">${desc}</p>
                                     <p>${star_repeat}</p>
                                     <p class="mycomment">${comment}</p>
+                                    <button onclick="delete_list(${num})">삭제</button>
                                 </div>
-                               <button>삭제</button>
                             </div>
                         </div>`;
                     $("#cards-box").append(temp_html);
@@ -139,6 +140,19 @@
                 window.location.reload()
             })
         }
+
+        function delete_list(num) {
+            console.log(num);
+            
+            let formData = new FormData();
+            formData.append("delete_give", num);
+            
+            fetch('/movie/delete', { method: "POST", body: formData }).then((res) => res.json()).then((data) => {
+                alert(data['msg'])
+                window.location.reload()
+            })
+        }
+
 
         function open_box() {
             $('#post-box').show()
@@ -191,7 +205,6 @@
                         <p>⭐⭐⭐</p>
                         <p class="mycomment">나의 한줄 평을 씁니다</p>
                     </div>
-                    <button>삭제</button>
                 </div>
             </div>
             <div class="col">
@@ -216,7 +229,6 @@
                         <p>⭐⭐⭐</p>
                         <p class="mycomment">나의 한줄 평을 씁니다</p>
                     </div>
-                    <button>삭제</button>
                 </div>
             </div>
             <div class="col">
@@ -229,7 +241,6 @@
                         <p>⭐⭐⭐</p>
                         <p class="mycomment">나의 한줄 평을 씁니다</p>
                     </div>
-                    <button>삭제</button>
                 </div>
             </div>
         </div>

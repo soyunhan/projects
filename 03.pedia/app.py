@@ -28,7 +28,7 @@ def movie_post():
     url_receive = request.form['url_give']
     comment_receive = request.form['comment_give']
     star_receive = request.form['star_give']
-    
+
 
     data = requests.get(url_receive,headers=headers)
 
@@ -37,6 +37,10 @@ def movie_post():
     ogtitle = soup.select_one('meta[property = "og:title"]')['content']
     ogdesc = soup.select_one('meta[property = "og:description"]')['content']
     ogimage = soup.select_one('meta[property = "og:image"]')['content']
+    
+
+    list_data = list(db.movies.find({},{'_id':False}))
+    num = len(list_data) + 1 
 
 
     doc = {
@@ -44,17 +48,26 @@ def movie_post():
         'desc' : ogdesc,
         'img' : ogimage,
         'comment' : comment_receive,
-        'star' : star_receive
+        'star' : star_receive,
+        'num' : num
     }
-
+     
     db.movies.insert_one(doc)
     return jsonify({'msg':'저장 완료!'})
 
-@app.route("/movie", methods=["GET"])
+# 삭제
+@app.route("/movie/delete", methods=["POST"])
+def movie_delete():
+    delete_receive = request.form['delete_give']
+    db.movies.delete_one({'num': int(delete_receive)})
+    return jsonify({'msg': '삭제 완료!'})
+ 
 
+@app.route("/movie", methods=["GET"])
 def movie_get():
     movies_data = list(db.movies.find({},{'_id':False}))
-    return jsonify({'result':movies_data})
+    return jsonify({'result': movies_data})
+    
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
